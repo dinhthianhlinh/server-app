@@ -5,8 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
+var employeeRouter = require('./routes/controllers/employee.controller');
+const database = require('./config/db');
 var app = express();
 
 // view engine setup
@@ -20,15 +20,23 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/v1/employee', employeeRouter);
+database().then(() => {
+  console.log('Connected to the database');
+  //log link
+  console.log('http://localhost:3000/');
+}).catch(error => {
+  console.log('Error connecting to the database');
+  console.log(error);
+});
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
