@@ -7,11 +7,12 @@ import argon2 from 'argon2';
 import { AdminModel } from '../sources/mongoose/models/index.js';
 import {
   CreateAdminResource,
-  CreateArticleResource,
-  CreateCategoryResource,
-  CreateCommentResource,
-  CreateComplicatedResource,
-  CreateUserResource,
+  CreateEmployeeModelResource,
+  CreateCustomerResource,
+  CreateInvoiceModelResource,
+  CreateInvoiceDetailModelResource,
+  CreateServiceModelResource,
+  CreateTaskModelResource,
 } from '../sources/mongoose/resources/index.js';
 
 import { AuthUsers } from './constants/authUsers.js';
@@ -42,11 +43,12 @@ export const generateAdminJSConfig: () => AdminJSOptions = () => ({
   resources: [
     // mongo
     CreateAdminResource(),
-    CreateUserResource(),
-    CreateCategoryResource(),
-    CreateArticleResource(),
-    CreateCommentResource(),
-    CreateComplicatedResource(),
+    CreateEmployeeModelResource(),
+    CreateCustomerResource(),
+    CreateInvoiceModelResource(),
+    CreateInvoiceDetailModelResource(),
+    CreateServiceModelResource(),
+    CreateTaskModelResource(),
   ],
 });
 

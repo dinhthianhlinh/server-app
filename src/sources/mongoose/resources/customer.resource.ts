@@ -1,10 +1,10 @@
 import { menu } from '../../../admin/index.js';
 import { useEnvironmentVariableToDisableActions } from '../../../admin/features/useEnvironmentVariableToDisableActions.js';
 import { ResourceFunction } from '../../../admin/types/index.js';
-import { CategoryModel } from '../models/index.js';
+import { CustomerModel } from '../models/index.js';
 
-export const CreateCategoryResource: ResourceFunction<typeof CategoryModel> = () => ({
-  resource: CategoryModel,
+export const CreateCustomerResource: ResourceFunction<typeof CustomerModel> = () => ({
+  resource: CustomerModel,
   features: [useEnvironmentVariableToDisableActions()],
   options: {
     navigation: menu.mongoose,

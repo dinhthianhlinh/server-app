@@ -31,10 +31,10 @@ export const CreateAdminResource: ResourceFunction<typeof AdminModel> = () => ({
       sortBy: 'email',
     },
     actions: {
-      delete: { isAccessible: false },
-      bulkDelete: { isAccessible: false },
-      edit: { isAccessible: false },
-      new: { isAccessible: false },
+      delete: { isAccessible: true },
+      bulkDelete: { isAccessible: true },
+      edit: { isAccessible: true },
+      new: { isAccessible: true },
     },
   },
 });
