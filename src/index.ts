@@ -8,13 +8,4 @@ switch (process.env.SERVER) {
   case 'EXPRESS':
     await import('./servers/express/index.js');
     break;
-  case 'HAPIJS':
-    await import('./servers/hapijs.js');
-    break;
-  case 'FASTIFY':
-    await import('./servers/fastify.js');
-    break;
-  case 'NESTJS':
-    await import('./servers/nestjs/index.js');
-    break;
 }
