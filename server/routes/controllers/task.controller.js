@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var Task = require('../../models/task.model')
-
+const authenticateToken = require('./authentication.controller')
 // get all tasks
 router.get('/', async (req, res) => {
     try {

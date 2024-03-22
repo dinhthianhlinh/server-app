@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
 const Employee = require('../../models/employee.model')
+const authenticateToken = require('./authentication.controller')
 
 //check user exists 
 router.get('/check-employee-exists/:email', async (req, res) => {

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var Invoice = require('../../models/invoice.model')
-
+const authenticateToken = require('./authentication.controller')
 // get all invoices
 router.get('/', async (req, res) => {
     try {

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var Customer = require('../../models/customer.model')
-
+const authenticateToken = require('./authentication.controller')
 // get all customers
 router.get('/', async (req, res) => {
     try {
