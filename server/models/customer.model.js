@@ -6,4 +6,4 @@ const Customer = new Schema({
     address: { type: 'String', required: true },
 })
 
-model.exports = model('Customers', Customer);
+module.exports = model('Customers', Customer);

@@ -56,7 +56,7 @@ router.patch('/:id', getInvoice, async (req, res) => {
 // delete invoice
 router.delete('/:id', getInvoice, async (req, res) => {
     try {
-        await res.invoice.remove();
+        await Invoice.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted invoice' });
     } catch (error) {
         res.status(500).json({ message: error.message });

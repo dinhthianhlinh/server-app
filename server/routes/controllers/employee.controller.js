@@ -84,7 +84,7 @@ router.patch('/:id', getEmployee, async (req, res) => {
 //delete employee
 router.delete('/:id', getEmployee, async (req, res) => {
     try {
-        await res.employee.remove();
+        await Employee.findByIdAndRemove(req.params.id);
         res.json({ message: 'Employee deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -95,13 +95,12 @@ router.delete('/:id', getEmployee, async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const employee = await Employee.findOne({
-            email
-                : req.body.email
+            email: req.body.email
         });
         if (employee) {
             if (bcrypt.compareSync(req.body.password, employee.password)) {
                 const token = jwt.sign({ id: employee._id },
-                    process.env.JWT_SECRET, { expiresIn: '1h' });
+                    process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
                 res.json({ token: token });
             }
             else {
@@ -124,13 +123,13 @@ async function getEmployee(req, res, next) {
         if (employee == null) {
             return res.status(404).json({ message: 'Cannot find employee' });
         }
+        res.employee = employee;
+        next();
     }
     catch (error) {
         return res.status(500).json({ message: error.message });
     }
-    res.employee = employee;
-    next();
-}
 
+}
 
 module.exports = router;

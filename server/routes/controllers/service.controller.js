@@ -60,7 +60,7 @@ router.patch('/:id', getService, async (req, res) => {
 // delete service
 router.delete('/:id', getService, async (req, res) => {
     try {
-        await res.service.remove();
+        await Service.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted service' });
     } catch (error) {
         res.status(500).json({ message: error.message });

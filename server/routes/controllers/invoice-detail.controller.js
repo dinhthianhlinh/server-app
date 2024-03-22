@@ -60,7 +60,7 @@ router.patch('/:id', getInvoiceDetail, async (req, res) => {
 // delete invoice detail
 router.delete('/:id', getInvoiceDetail, async (req, res) => {
     try {
-        await res.invoiceDetail.remove();
+        await InvoiceDetail.findByIdAndRemove(req.params.id);
         res.json({ message: 'Deleted invoice detail' });
     } catch (error) {
         res.status(500).json({ message: error.message });

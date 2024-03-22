@@ -21,10 +21,12 @@ router.get('/:id', getTask, (req, res) => {
 // create task
 router.post('/create', async (req, res) => {
     const task = new Task({
-        title: req.body.title,
+        name: req.body.name,
         description: req.body.description,
+        start_date: req.body.start_date,
+        end_date: req.body.end_date,
         status: req.body.status,
-        employeeId: req.body.employeeId
+        employee_id: req.body.employee_id
     });
 
     try {
@@ -37,17 +39,23 @@ router.post('/create', async (req, res) => {
 
 // update task
 router.patch('/:id', getTask, async (req, res) => {
-    if (req.body.title != null) {
-        res.task.title = req.body.title;
+    if (req.body.name != null) {
+        res.task.name = req.body.name;
     }
     if (req.body.description != null) {
         res.task.description = req.body.description;
     }
+    if (req.body.start_date != null) {
+        res.task.start_date = req.body.start_date;
+    }
+    if (req.body.end_date != null) {
+        res.task.end_date = req.body.end_date;
+    }
     if (req.body.status != null) {
         res.task.status = req.body.status;
     }
-    if (req.body.employeeId != null) {
-        res.task.employeeId = req.body.employeeId;
+    if (req.body.employee_id != null) {
+        res.task.employee_id = req.body.employee_id;
     }
     try {
         const updatedTask = await res.task.save();
@@ -60,7 +68,7 @@ router.patch('/:id', getTask, async (req, res) => {
 // delete task
 router.delete('/:id', getTask, async (req, res) => {
     try {
-        await res.task.remove();
+        await Task.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted task' });
     } catch (error) {
         res.status(500).json({ message: error.message });
