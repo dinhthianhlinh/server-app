@@ -40,7 +40,7 @@ router.get('/:id', authenticateToken, getEmployee, (req, res) => {
 });
 
 //create employee
-router.post('/create', authenticateToken, async (req, res) => {
+router.post('/create', async (req, res) => {
     const employee = new Employee({
         fullName: req.body.fullName,
         email: req.body.email,
