@@ -4,7 +4,7 @@ var router = express.Router();
 var InvoiceDetail = require('../../models/invoice-detail.model')
 const authenticateToken = require('./authentication.controller')
 // get all invoice details
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const invoiceDetails = await InvoiceDetail.find();
         res.json(invoiceDetails);
@@ -14,12 +14,12 @@ router.get('/', async (req, res) => {
 });
 
 // get invoice detail by id
-router.get('/:id', getInvoiceDetail, (req, res) => {
+router.get('/:id', authenticateToken, getInvoiceDetail, (req, res) => {
     res.json(res.invoiceDetail);
 });
 
 // create invoice detail
-router.post('/create', async (req, res) => {
+router.post('/create', authenticateToken, async (req, res) => {
     const invoiceDetail = new InvoiceDetail({
         invoice_id: req.body.invoice_id,
         service_id: req.body.service_id,
@@ -36,7 +36,7 @@ router.post('/create', async (req, res) => {
 });
 
 // update invoice detail
-router.patch('/:id', getInvoiceDetail, async (req, res) => {
+router.patch('/:id', authenticateToken, getInvoiceDetail, async (req, res) => {
     if (req.body.invoice_id != null) {
         res.invoiceDetail.invoice_id = req.body.invoice_id;
     }
@@ -58,7 +58,7 @@ router.patch('/:id', getInvoiceDetail, async (req, res) => {
 });
 
 // delete invoice detail
-router.delete('/:id', getInvoiceDetail, async (req, res) => {
+router.delete('/:id', authenticateToken, getInvoiceDetail, async (req, res) => {
     try {
         await InvoiceDetail.findByIdAndRemove(req.params.id);
         res.json({ message: 'Deleted invoice detail' });

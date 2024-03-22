@@ -25,7 +25,7 @@ router.get('/check-employee-exists/:email', async (req, res) => {
 });
 
 //get all employees
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, authenticateToken, async (req, res) => {
     try {
         const employees = await Employee.find().select('-password');
         res.json(employees);
@@ -35,12 +35,12 @@ router.get('/', async (req, res) => {
 });
 
 //get employee by id
-router.get('/:id', getEmployee, (req, res) => {
+router.get('/:id', authenticateToken, getEmployee, (req, res) => {
     res.json(res.employee);
 });
 
 //create employee
-router.post('/create', async (req, res) => {
+router.post('/create', authenticateToken, async (req, res) => {
     const employee = new Employee({
         fullName: req.body.fullName,
         email: req.body.email,
@@ -58,7 +58,7 @@ router.post('/create', async (req, res) => {
 });
 
 //update employee
-router.patch('/:id', getEmployee, async (req, res) => {
+router.patch('/:id', authenticateToken, getEmployee, async (req, res) => {
     if (req.body.fullName != null) {
         res.employee.fullName = req.body.fullName;
     }
@@ -83,7 +83,7 @@ router.patch('/:id', getEmployee, async (req, res) => {
 });
 
 //delete employee
-router.delete('/:id', getEmployee, async (req, res) => {
+router.delete('/:id', authenticateToken, getEmployee, async (req, res) => {
     try {
         await Employee.findByIdAndRemove(req.params.id);
         res.json({ message: 'Employee deleted' });

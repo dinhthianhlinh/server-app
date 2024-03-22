@@ -4,7 +4,7 @@ var router = express.Router();
 var Service = require('../../models/service.model')
 const authenticateToken = require('./authentication.controller')
 // get all services
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const services = await Service.find();
         res.json(services);
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 // get service by id
-router.get('/:id', getService, (req, res) => {
+router.get('/:id', authenticateToken, getService, (req, res) => {
     res.json(res.service);
 });
 
@@ -36,7 +36,7 @@ router.post('/create', async (req, res) => {
 });
 
 // update service
-router.patch('/:id', getService, async (req, res) => {
+router.patch('/:id', authenticateToken, getService, async (req, res) => {
     if (req.body.name != null) {
         res.service.name = req.body.name;
     }
@@ -58,7 +58,7 @@ router.patch('/:id', getService, async (req, res) => {
 });
 
 // delete service
-router.delete('/:id', getService, async (req, res) => {
+router.delete('/:id', authenticateToken, getService, async (req, res) => {
     try {
         await Service.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted service' });

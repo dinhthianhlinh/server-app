@@ -4,7 +4,7 @@ var router = express.Router();
 var Customer = require('../../models/customer.model')
 const authenticateToken = require('./authentication.controller')
 // get all customers
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const customers = await Customer.find();
         res.json(customers);
@@ -14,12 +14,12 @@ router.get('/', async (req, res) => {
 });
 
 // get customer by id
-router.get('/:id', getCustomer, (req, res) => {
+router.get('/:id', authenticateToken, getCustomer, (req, res) => {
     res.json(res.customer);
 });
 
 // create customer
-router.post('/create', async (req, res) => {
+router.post('/create', authenticateToken, async (req, res) => {
     const customer = new Customer({
         fullName: req.body.fullName,
         phone: req.body.phone,
@@ -35,7 +35,7 @@ router.post('/create', async (req, res) => {
 });
 
 // update customer
-router.patch('/:id', getCustomer, async (req, res) => {
+router.patch('/:id', authenticateToken, getCustomer, async (req, res) => {
     if (req.body.fullName != null) {
         res.customer.fullName = req.body.fullName;
     }
@@ -54,7 +54,7 @@ router.patch('/:id', getCustomer, async (req, res) => {
 });
 
 // delete customer
-router.delete('/:id', getCustomer, async (req, res) => {
+router.delete('/:id', authenticateToken, getCustomer, async (req, res) => {
     try {
         await Customer.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted customer' });

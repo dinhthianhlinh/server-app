@@ -4,7 +4,7 @@ var router = express.Router();
 var Task = require('../../models/task.model')
 const authenticateToken = require('./authentication.controller')
 // get all tasks
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const tasks = await Task.find();
         res.json(tasks);
@@ -14,12 +14,12 @@ router.get('/', async (req, res) => {
 });
 
 // get task by id
-router.get('/:id', getTask, (req, res) => {
+router.get('/:id', authenticateToken, getTask, (req, res) => {
     res.json(res.task);
 });
 
 // create task
-router.post('/create', async (req, res) => {
+router.post('/create', authenticateToken, async (req, res) => {
     const task = new Task({
         name: req.body.name,
         description: req.body.description,
@@ -38,7 +38,7 @@ router.post('/create', async (req, res) => {
 });
 
 // update task
-router.patch('/:id', getTask, async (req, res) => {
+router.patch('/:id', authenticateToken, getTask, async (req, res) => {
     if (req.body.name != null) {
         res.task.name = req.body.name;
     }
@@ -66,7 +66,7 @@ router.patch('/:id', getTask, async (req, res) => {
 });
 
 // delete task
-router.delete('/:id', getTask, async (req, res) => {
+router.delete('/:id', authenticateToken, getTask, async (req, res) => {
     try {
         await Task.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted task' });
