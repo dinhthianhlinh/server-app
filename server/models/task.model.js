@@ -1,4 +1,4 @@
-import { model, Schema, Types } from 'mongoose';
+var { Schema, model, Types } = require('mongoose');
 
 const Task = new Schema({
     title: { type: 'String', required: true },

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+var { Schema, model, Types } = require('mongoose');
 
 const Service = new Schema({
     name: { type: 'String', required: true },

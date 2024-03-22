@@ -1,4 +1,5 @@
-import { model, Schema } from 'mongoose';
+var { Schema, model } = require('mongoose');
+
 const Customer = new Schema({
     fullName: { type: 'String', required: true },
     phone: { type: 'String', required: true },

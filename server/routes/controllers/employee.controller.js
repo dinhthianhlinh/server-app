@@ -117,6 +117,20 @@ router.post('/login', async (req, res) => {
 }
 );
 
+async function getEmployee(req, res, next) {
+    let employee;
+    try {
+        employee = await Employee.findById(req.params.id);
+        if (employee == null) {
+            return res.status(404).json({ message: 'Cannot find employee' });
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+    res.employee = employee;
+    next();
+}
 
 
 module.exports = router;

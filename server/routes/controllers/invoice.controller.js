@@ -63,4 +63,20 @@ router.delete('/:id', getInvoice, async (req, res) => {
     }
 });
 
+async function getInvoice(req, res, next) {
+    let invoice;
+    try {
+        invoice = await Invoice.findById(req.params.id);
+        if (invoice == null) {
+            return res.status(404).json({ message: 'Cannot find invoice' });
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+
+    res.invoice = invoice;
+    next();
+}
+
 module.exports = router;

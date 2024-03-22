@@ -1,4 +1,4 @@
-import { model, Schema, Types } from 'mongoose';
+var { Schema, model, Types } = require('mongoose');
 // invoice_id, service_id, quantity, price
 const InvoiceDetail = new Schema({
     invoice_id: { type: Types.ObjectId, ref: 'Invoices' },

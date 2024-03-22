@@ -67,4 +67,21 @@ router.delete('/:id', getInvoiceDetail, async (req, res) => {
     }
 });
 
+async function getInvoiceDetail(req, res, next) {
+    let invoiceDetail;
+    try {
+        invoiceDetail = await InvoiceDetail.findById(req.params.id);
+        if (invoiceDetail == null) {
+            return res.status(404).json({ message: 'Cannot find invoice detail' });
+        }
+
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+
+    res.invoiceDetail = invoiceDetail;
+    next();
+}
+
 module.exports = router;

@@ -63,4 +63,20 @@ router.delete('/:id', getCustomer, async (req, res) => {
     }
 });
 
+async function getCustomer(req, res, next) {
+    let customer;
+    try {
+        customer = await Customer.findById(req.params.id);
+        if (customer == null) {
+            return res.status(404).json({ message: 'Cannot find customer' });
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+
+    res.customer = customer;
+    next();
+}
+
 module.exports = router;

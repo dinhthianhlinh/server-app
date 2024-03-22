@@ -66,3 +66,20 @@ router.delete('/:id', getService, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+async function getService(req, res, next) {
+    let service;
+    try {
+        service = await Service.findById(req.params.id);
+        if (service == null) {
+            return res.status(404).json({ message: 'Cannot find service' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+
+    res.service = service;
+    next();
+}
+
+module.exports = router;
