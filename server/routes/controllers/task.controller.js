@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const unidecode = require('unidecode');
 
 var Task = require('../../models/task.model')
 const authenticateToken = require('./authentication.controller')
@@ -75,6 +76,16 @@ router.delete('/:id', authenticateToken, getTask, async (req, res) => {
     }
 });
 
+// get tasks by employee id
+router.get('/employee/:employeeId', authenticateToken, async (req, res) => {
+    try {
+        const tasks = await Task.find({ employee_id: req.params.employeeId });
+        res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 async function getTask(req, res, next) {
     let task;
     try {
@@ -91,4 +102,15 @@ async function getTask(req, res, next) {
     next();
 }
 
+// search tasks of employee by name
+router.get('/employee/:employeeId/search', authenticateToken, async (req, res) => {
+    try {
+        const searchName = unidecode(req.query.name).toLowerCase();
+        const tasks = await Task.find({ employee_id: req.params.employeeId });
+        const matchedTasks = tasks.filter(task => unidecode(task.name).toLowerCase().includes(searchName));
+        res.json(matchedTasks);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 module.exports = router;

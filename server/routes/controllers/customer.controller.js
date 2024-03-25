@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var Invoice = require('../../models/invoice.model');
 
 var Customer = require('../../models/customer.model')
 const authenticateToken = require('./authentication.controller')
@@ -79,5 +80,13 @@ async function getCustomer(req, res, next) {
 
 
 }
-
+// get all invoices of a customer
+router.get('/:id/invoices', authenticateToken, async (req, res) => {
+    try {
+        const invoices = await Invoice.find({ customer_id: req.params.id });
+        res.json(invoices);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 module.exports = router;

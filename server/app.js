@@ -12,6 +12,7 @@ var serviceRouter = require('./routes/controllers/service.controller');
 var taskRouter = require('./routes/controllers/task.controller');
 var invoiceRouter = require('./routes/controllers/invoice.controller');
 var invoiceDetailRouter = require('./routes/controllers/invoice-detail.controller');
+var statisticsRouter = require('./routes/controllers/statistics.controller');
 const database = require('./config/db');
 var app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/v1/service', serviceRouter);
 app.use('/api/v1/task', taskRouter);
 app.use('/api/v1/invoice', invoiceRouter);
 app.use('/api/v1/invoice-detail', invoiceDetailRouter);
+app.use('/api/v1/statistics', statisticsRouter);
 database().then(() => {
   console.log('Connected to the database');
   //log link
