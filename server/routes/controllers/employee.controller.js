@@ -101,8 +101,18 @@ router.post('/login', async (req, res) => {
         if (employee) {
             if (bcrypt.compareSync(req.body.password, employee.password)) {
                 const token = jwt.sign({ id: employee._id },
-                    process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-                res.json({ token: token });
+                    process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
+                res.json({
+
+                    token: token,
+                    employee: {
+                        id: employee._id,
+                        fullName: employee.fullName,
+                        email: employee.email,
+                        role: employee.role,
+                        phone: employee.phone
+                    }
+                });
             }
             else {
                 res.status(401).json({ message: 'Invalid password' });
