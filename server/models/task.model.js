@@ -5,7 +5,7 @@ const Task = new Schema({
     description: { type: 'String', required: true },
     start_date: { type: 'Date', required: true },
     end_date: { type: 'Date', required: true },
-    status: { type: 'String', required: true },
+    status: { type: 'Number', required: true },
     employee_id: { type: Types.ObjectId, ref: 'Employees', required: true },
 }, { timestamps: true });
 

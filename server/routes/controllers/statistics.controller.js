@@ -8,256 +8,91 @@ var Customer = require('../../models/customer.model');
 var Service = require('../../models/service.model');
 var InvoiceDetail = require('../../models/invoice-detail.model');
 
-// get task statistics by status
-router.get('/task-status', async (req, res) => {
+// get status array 1 2 3
+router.get('/task/all/:id', async (req, res) => {
     try {
-        const stats = await Task.aggregate([
-            {
-                $group: {
-                    _id: '$status',
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
+        const statuses = [1, 2, 3];
+        const tasks = await Task.find({ employee_id: req.params.id, status: { $in: statuses } });
+        const countByStatus = statuses.map(status => ({
+            status: status,
+            count: tasks.filter(task => task.status === status).length
+        }));
+        res.json(countByStatus);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// get task by id employee and status return count
+router.get('/task/:id', async (req, res) => {
+    try {
+        const status = req.query.status;
+        console.log(req.query.status);
+        const task = await Task.find({ employee_id: req.params.id, status: status });
+        res.json(task.length);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-// get task statistics by employee
-router.get('/task-employee', async (req, res) => {
+// get revenue for the last 24 hours
+router.get('/revenue/day', async (req, res) => {
     try {
-        const stats = await Task.aggregate([
-            {
-                $group: {
-                    _id: '$employee_id',
-                    count: { $sum: 1 }
-                }
-            }
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+        const revenue = await InvoiceDetail.aggregate([
+            { $match: { createdAt: { $gte: oneDayAgo } } },
+            { $group: { _id: { $hour: "$createdAt" }, total: { $sum: { $multiply: ["$price", "$quantity"] } } } },
+            { $sort: { _id: 1 } }
         ]);
-        res.json(stats);
+
+        const totalRevenue = await InvoiceDetail.aggregate([
+            { $match: { createdAt: { $gte: oneDayAgo } } },
+            { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$quantity"] } } } }
+        ]);
+
+        res.json({ revenue: revenue.map(item => ({ hour: item._id, total: item.total })), totalRevenue: totalRevenue[0].total });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-// get invoice statistics by status
-router.get('/invoice-status', async (req, res) => {
+// get revenue for the last 7 days
+router.get('/revenue/week', async (req, res) => {
     try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: '$status',
-                    count: { $sum: 1 }
-                }
-            }
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        const revenue = await InvoiceDetail.aggregate([
+            { $match: { createdAt: { $gte: oneWeekAgo } } },
+            { $group: { _id: { $dayOfMonth: "$createdAt" }, total: { $sum: { $multiply: ["$price", "$quantity"] } } } },
+            { $sort: { _id: 1 } }
         ]);
-        res.json(stats);
+
+        const totalRevenue = await InvoiceDetail.aggregate([
+            { $match: { createdAt: { $gte: oneWeekAgo } } },
+            { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$quantity"] } } } }
+        ]);
+
+        res.json({ revenue: revenue.map(item => ({ day: item._id, total: item.total })), totalRevenue: totalRevenue[0].total });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-// get invoice statistics by customer
-router.get('/invoice-customer', async (req, res) => {
+// get monthly revenue
+router.get('/revenue/month', async (req, res) => {
     try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: '$customer_id',
-                    count: { $sum: 1 }
-                }
-            }
+        const revenue = await InvoiceDetail.aggregate([
+            { $group: { _id: { $month: "$createdAt" }, total: { $sum: { $multiply: ["$price", "$quantity"] } } } },
+            { $sort: { _id: 1 } }
         ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
 
-// get invoice statistics by service
-router.get('/invoice-service', async (req, res) => {
-    try {
-        const stats = await InvoiceDetail.aggregate([
-            {
-                $group: {
-                    _id: '$service_id',
-                    count: { $sum: 1 }
-                }
-            }
+        const totalRevenue = await InvoiceDetail.aggregate([
+            { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$quantity"] } } } }
         ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
 
-// get invoice statistics by employee
-router.get('/invoice-employee', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: '$employee_id',
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get invoice statistics by month
-router.get('/invoice-month', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { $month: '$date' },
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get invoice statistics by year
-router.get('/invoice-year', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { $year: '$date' },
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get invoice statistics by quarter
-router.get('/invoice-quarter', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { $quarter: '$date' },
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get invoice statistics by month and year
-router.get('/invoice-month-year', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { month: { $month: '$date' }, year: { $year: '$date' } },
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get invoice statistics by quarter and year
-router.get('/invoice-quarter-year', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { quarter: { $quarter: '$date' }, year: { $year: '$date' } },
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get income statistics by month
-router.get('/income-month', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { $month: '$date' },
-                    income: { $sum: '$total' }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get income statistics by year
-router.get('/income-year', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { $year: '$date' },
-                    income: { $sum: '$total' }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get income statistics by quarter
-router.get('/income-quarter', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { $quarter: '$date' },
-                    income: { $sum: '$total' }
-                }
-            }
-        ]);
-        res.json(stats);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// get income statistics by month and year
-router.get('/income-month-year', async (req, res) => {
-    try {
-        const stats = await Invoice.aggregate([
-            {
-                $group: {
-                    _id: { month: { $month: '$date' }, year: { $year: '$date' } },
-                    income: { $sum: '$total' }
-                }
-            }
-        ]);
-        res.json(stats);
+        res.json({ revenue: revenue.map(item => ({ month: item._id, total: item.total })), totalRevenue: totalRevenue[0].total });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

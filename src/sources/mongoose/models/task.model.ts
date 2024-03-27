@@ -5,7 +5,7 @@ export interface Task {
   description: string;
   start_date: Date;
   end_date: Date;
-  status: string;
+  status: Number;
   employee_id: Types.ObjectId;
 }
 
@@ -28,7 +28,7 @@ export const TaskSchema = new Schema<Task>(
       required: true,
     },
     status: {
-      type: String,
+      type: Number,
       required: true,
     },
     employee_id: { type: Schema.Types.ObjectId, ref: 'Employee' },
