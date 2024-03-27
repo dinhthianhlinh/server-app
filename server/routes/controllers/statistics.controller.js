@@ -44,7 +44,14 @@ router.get('/revenue/day', async (req, res) => {
 
         const revenue = await InvoiceDetail.aggregate([
             { $match: { createdAt: { $gte: oneDayAgo } } },
-            { $group: { _id: { $hour: "$createdAt" }, total: { $sum: { $multiply: ["$price", "$quantity"] } } } },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: { format: "%H", date: "$createdAt", timezone: "Asia/Ho_Chi_Minh" }
+                    },
+                    total: { $sum: { $multiply: ["$price", "$quantity"] } }
+                }
+            },
             { $sort: { _id: 1 } }
         ]);
 
