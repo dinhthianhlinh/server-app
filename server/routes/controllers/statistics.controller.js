@@ -7,7 +7,9 @@ var Employee = require('../../models/employee.model');
 var Customer = require('../../models/customer.model');
 var Service = require('../../models/service.model');
 var InvoiceDetail = require('../../models/invoice-detail.model');
-
+function formatCurrency(number) {
+    return number / 1000000;
+}
 // get status array 1 2 3
 router.get('/task/all/:id', async (req, res) => {
     try {
@@ -51,7 +53,10 @@ router.get('/revenue/day', async (req, res) => {
             { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$quantity"] } } } }
         ]);
 
-        res.json({ revenue: revenue.map(item => ({ hour: item._id, total: item.total })), totalRevenue: totalRevenue[0].total });
+        res.json({
+            revenue: revenue.map(item => ({ hour: item._id, total: formatCurrency(item.total) })),
+            totalRevenue: formatCurrency(totalRevenue[0].total)
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -74,7 +79,10 @@ router.get('/revenue/week', async (req, res) => {
             { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$quantity"] } } } }
         ]);
 
-        res.json({ revenue: revenue.map(item => ({ day: item._id, total: item.total })), totalRevenue: totalRevenue[0].total });
+        res.json({
+            revenue: revenue.map(item => ({ day: item._id, total: formatCurrency(item.total) })),
+            totalRevenue: formatCurrency(totalRevenue[0].total)
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -92,7 +100,37 @@ router.get('/revenue/month', async (req, res) => {
             { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$quantity"] } } } }
         ]);
 
-        res.json({ revenue: revenue.map(item => ({ month: item._id, total: item.total })), totalRevenue: totalRevenue[0].total });
+        res.json({
+            revenue: revenue.map(item => ({ month: item._id, total: formatCurrency(item.total) })),
+            totalRevenue: formatCurrency(totalRevenue[0].total)
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get('/service/usage', async (req, res) => {
+    try {
+        const serviceUsage = await InvoiceDetail.aggregate([
+            {
+                $lookup: {
+                    from: 'services',
+                    localField: 'service_id',
+                    foreignField: '_id',
+                    as: 'service'
+                }
+            },
+            { $unwind: '$service' },
+            {
+                $group: {
+                    _id: '$service.name',
+                    totalQuantity: { $sum: '$quantity' }
+                }
+            },
+            { $sort: { totalQuantity: -1 } }
+        ]);
+
+        res.json(serviceUsage);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
